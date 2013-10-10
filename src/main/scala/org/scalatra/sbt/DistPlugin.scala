@@ -1,10 +1,8 @@
 package org.scalatra.sbt
 
-import _root_.sbt._
+import sbt._
 import classpath.ClasspathUtilities
-import Project.Initialize
 import Keys._
-import Defaults._
 
 object DistPlugin extends Plugin {
 
@@ -20,7 +18,7 @@ object DistPlugin extends Plugin {
   import DistKeys._
   val Dist = config("dist")
 
-  private def assembleJarsAndClassesTask: Initialize[Task[Seq[File]]] =
+  private def assembleJarsAndClassesTask: Def.Initialize[Task[Seq[File]]] =
     (fullClasspath in Runtime, excludeFilter in Dist, target in Dist) map { (cp, excl, tgt) =>
       IO.delete(tgt)
       val (libs, dirs) = cp.map(_.data).toSeq partition ClasspathUtilities.isArchive
@@ -61,7 +59,7 @@ object DistPlugin extends Plugin {
 
   private[this] val webappResources = SettingKey[Seq[File]]("webapp-resources")
 
-  private def stageTask: Initialize[Task[Seq[File]]] =
+  private def stageTask: Def.Initialize[Task[Seq[File]]] =
     (webappResources in Compile, excludeFilter in Dist, assembleJarsAndClasses in Dist, target in Dist, name in Dist, mainClass in Dist, javaOptions in Dist, envExports in Dist, streams) map { (webRes, excl, libFiles, tgt, nm, mainClass, javaOptions, envExports, s) =>
       val launch = createLauncherScriptTask(tgt, nm, libFiles, mainClass, javaOptions, envExports, s.log)
       val logsDir = tgt / "logs"
@@ -76,7 +74,7 @@ object DistPlugin extends Plugin {
       libFiles ++ Seq(launch, logsDir) ++ resourceFiles
     }
 
-  private def distTask: Initialize[Task[File]] =
+  private def distTask: Def.Initialize[Task[File]] =
     (stage in Dist, target in Dist, name in Dist, version in Dist) map { (files, tgt, nm, ver) =>
       val zipFile = tgt / ".." / (nm + "-" + ver + ".zip")
       val paths = files x rebase(tgt, nm)

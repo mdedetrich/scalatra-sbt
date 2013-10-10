@@ -2,15 +2,14 @@ package org.scalatra.sbt
 
 import sbt._
 import Keys._
-import sbt.Project.Initialize
 import com.earldouglas.xsbtwebplugin.PluginKeys._
-import io.Codec
+import java.nio.charset.Charset
 
 object JRebelPlugin {
 
   import PluginKeys._
 
-  def generateJRebelXmlTask: sbt.Project.Initialize[Task[Unit]] =
+  def generateJRebelXmlTask: Def.Initialize[Task[Unit]] =
     (resourceManaged in Compile, crossTarget in Compile, crossTarget in Test, webappResources in Compile, streams) map {
       (tgt, src, tst, extra, s) =>
         val content = 
@@ -31,10 +30,10 @@ object JRebelPlugin {
           </application>.toString()
         val res = tgt / "rebel.xml"
         s.log.info("Generating %s.".format(res, content))
-        IO.write(res, content, Codec.UTF8, append = false)
+        IO.write(res, content, Charset.forName("UTF-8"), append = false)
     }
 
-  val jrebelSettings: Seq[Project.Setting[_]] = Seq(
+  val jrebelSettings: Seq[Def.Setting[_]] = Seq(
     generateJRebel in Compile <<= generateJRebelXmlTask,
     generateJRebel <<= generateJRebel in Compile,
     compile in Compile <<= (compile in Compile).dependsOn(generateJRebel in Compile)

@@ -2,7 +2,6 @@ package org.scalatra.sbt
 
 import sbt._
 import Keys._
-import Project.Initialize
 import com.earldouglas.xsbtwebplugin.PluginKeys._
 import com.earldouglas.xsbtwebplugin.WebPlugin._
 
@@ -14,7 +13,7 @@ object WarOverlayPlugin extends Plugin {
 
   import Keys._
 
-  def overlayWarsTask: Initialize[Task[Seq[File]]] = {
+  def overlayWarsTask: Def.Initialize[Task[Seq[File]]] = {
     (sbt.Keys.update, target in (Compile, overlayWars), streams) map { (fcp, tgt, s) =>
       s.log.info("overlaying wars in classpath to " + tgt)
       if (!tgt.exists()) tgt.mkdirs()

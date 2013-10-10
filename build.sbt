@@ -21,4 +21,7 @@ publishTo <<= (version) { version: String =>
    Some(Resolver.url(name, new URL(url))(Resolver.ivyStylePatterns))
 }
 
-addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.3.0")
+addSbtPlugin("com.earldouglas" % "xsbt-web-plugin" % "0.5.0-SNAPSHOT")
+
+scalaVersion :=  "2.10.3"
+
